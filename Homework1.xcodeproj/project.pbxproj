@@ -20,6 +20,7 @@
 		455BEAD0292225B700CFA27E /* Homework1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455BEACF292225B700CFA27E /* Homework1Tests.swift */; };
 		455BEAD2292225B700CFA27E /* Homework1TestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455BEAD1292225B700CFA27E /* Homework1TestsLaunchTests.swift */; };
 		455BEADF29223E9C00CFA27E /* MainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455BEADE29223E9C00CFA27E /* MainController.swift */; };
+		A10000000000000000000001 /* GameRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* GameRules.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		455BEACF292225B700CFA27E /* Homework1Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Homework1Tests.swift; sourceTree = "<group>"; };
 		455BEAD1292225B700CFA27E /* Homework1TestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Homework1TestsLaunchTests.swift; sourceTree = "<group>"; };
 		455BEADE29223E9C00CFA27E /* MainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainController.swift; sourceTree = "<group>"; };
+		A10000000000000000000002 /* GameRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRules.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +109,7 @@
 		455BEAAD292225B400CFA27E /* Homework1 */ = {
 			isa = PBXGroup;
 			children = (
+				A10000000000000000000002 /* GameRules.swift */,
 				45156A4629224C0C00810ACF /* letters */,
 				45156A442922488000810ACF /* JSONdatafiles */,
 				455BEAAE292225B400CFA27E /* AppDelegate.swift */,
@@ -272,6 +275,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000001 /* GameRules.swift in Sources */,
 				455BEAB3292225B400CFA27E /* ViewController.swift in Sources */,
 				455BEADF29223E9C00CFA27E /* MainController.swift in Sources */,
 				455BEAAF292225B400CFA27E /* AppDelegate.swift in Sources */,

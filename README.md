@@ -22,7 +22,7 @@ The Xcode project was restored from its ZIP archive and sources/resources were m
 
 ## Status
 
-This is an educational prototype. Test files are mostly generated scaffolding, not meaningful gameplay coverage. Input handling, punctuation display (including apostrophes in movie titles), repeated incorrect guesses and missing/corrupt phrase files still need further work. Scores are written to the app's Documents directory as `highscores.txt`.
+This is an educational prototype. The original Xcode test files are mostly generated scaffolding. Focused regression checks now cover A–Z input, punctuation-aware completion, duplicate guesses and guarded phrase loading. Punctuation is displayed directly, repeated guesses leave the round unchanged, and unavailable phrase data disables guessing with a visible message. Full UIKit interaction and persistence testing remain outstanding. Scores are written to the app's Documents directory as `highscores.txt`.
 
 All project file references resolve and property lists, JSON and XML resources were validated locally. No successful iOS build or simulator run is claimed: full Xcode is unavailable on the validation machine and its Swift compiler reports a duplicate `SwiftBridging` module. The reconstructed asset catalogue has an empty app-icon slot because icon artwork was absent from the original files.
 
@@ -33,3 +33,5 @@ Created as coursework by Mohammed al-otaibi; original source headers and the acc
 ## Automated checks
 
 Run `python3 scripts/validate_resources.py` for portable resource checks. GitHub Actions runs this check and attempts unsigned iOS Simulator builds on macOS. These workflows have not yet been run remotely; successful local resource checks do not establish that an iOS build passes.
+
+Focused Swift regression checks run with `python3 scripts/test_logic.py` on macOS and in a separate GitHub Actions job. They test the shared logic used by the app, without requiring an iOS simulator.

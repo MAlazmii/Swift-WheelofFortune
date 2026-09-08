@@ -22,6 +22,7 @@ class MainController: UIViewController, UICollectionViewDelegate, UICollectionVi
     var guessingPhrase:String = "";
     var genre:String = "";
     var guessedAlreadyRight:[String] = [];
+    var allGuesses = Set<String>()
     var phrases:[String] = [];
     let multiplierOptions = [1, 2, 5, 10, 20]
     let numOfTries = 10
@@ -66,14 +67,15 @@ class MainController: UIViewController, UICollectionViewDelegate, UICollectionVi
             // Set the label to be hidden
             cell.theLabel.isHidden = true
         }
-        else if (String(letter) == " ") {
+        else if !GameRules.isLetter(letter) {
             cell.theImage.image = nil
-            cell.theLabel.text = ""
-            // Set the label to be hidden
-            cell.theLabel.isHidden = true
+            cell.theLabel.text = String(letter)
+            cell.theLabel.backgroundColor = .clear
+            cell.theLabel.isHidden = false
         }
         else{
             cell.theImage.image = nil
+            cell.theLabel.text = ""
             // set the label background to light gray
             cell.theLabel.backgroundColor = UIColor.lightGray
             cell.theLabel.isHidden = false
@@ -96,51 +98,47 @@ class MainController: UIViewController, UICollectionViewDelegate, UICollectionVi
         layout.minimumLineSpacing = 0
         collectionView!.collectionViewLayout = layout
 
-        // Get the list of phrases and the genre name from the json file
-        let phrasesAndGenre:([String],String) = getJSONDataIntoArray()
-
-        phrases = phrasesAndGenre.0
-        
-        genre = phrasesAndGenre.1
-
-
-        guessingPhrase = phrases.randomElement()!
-        guessingPhrase = guessingPhrase.uppercased()
-        print(guessingPhrase)
-
-        redraw()
-
         collectionView.dataSource = self
-	
+        guard let phraseData = PhraseData.load(from: Bundle.main.url(forResource: "JSONdatafiles", withExtension: nil)) else {
+            showUnavailableData()
+            return
+        }
+        phrases = phraseData.list
+        genre = phraseData.genre
+        reloadGame()
+    }
+
+    func showUnavailableData() {
+        guessingPhrase = ""
+        guessTextField.isEnabled = false
+        genreLabel.text = "Phrases unavailable. Please reinstall the app."
+        multiplierLabel.text = ""
+        noMatchCountLabel.text = ""
+        scoreLabel.text = ""
+        collectionView.reloadData()
     }
 
     func reloadGame(){
-        multiplier = multiplierOptions.randomElement()!
+        guard let phrase = phrases.randomElement() else {
+            showUnavailableData()
+            return
+        }
         noMatchCount = 0
         score = 0
-        guessingPhrase = phrases.randomElement()!
-        guessingPhrase = guessingPhrase.uppercased()
+        guessingPhrase = phrase.uppercased()
         guessedAlreadyRight = []
-        print(guessingPhrase)
+        allGuesses.removeAll()
+        guessTextField.isEnabled = true
         redraw()
     }
-    
+
     @IBAction func check(_ sender: Any) {
-        // Get the guess from the text field
-        let guess = guessTextField.text!
+        let guess = guessTextField.text ?? ""
         guessTextField.text = ""
-        if (guess == "") {
-            return
-        }
-        if (guess.count > 1) {
-            return
-        }
-        let guessCapitalized = guess.uppercased()
-        
-        if (guessedAlreadyRight.contains(guessCapitalized)){
-            return
-        }
-        else{
+        guard !guessingPhrase.isEmpty, noMatchCount < numOfTries,
+              !GameRules.isComplete(guessingPhrase, guessed: Set(guessedAlreadyRight)),
+              let guessCapitalized = GameRules.acceptGuess(guess, guessed: &allGuesses) else { return }
+        do {
             print(guessingPhrase)
 
             if guessingPhrase.contains(guessCapitalized) {
@@ -175,13 +173,7 @@ class MainController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
 
     func checkIfGameWon(){
-        // Check if the user has won the game
-        var gameWon = true
-        for letter in guessingPhrase {
-            if (letter != " " && !guessedAlreadyRight.contains(String(letter)) ) {
-                gameWon = false
-            }
-        }
+        let gameWon = GameRules.isComplete(guessingPhrase, guessed: Set(guessedAlreadyRight))
 
         if (gameWon == true) {
             // Game won alert
@@ -238,45 +230,4 @@ class MainController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
 
 
-    func getFilesInBundleFolder(named fileOrFolderName:String, withExt: String) -> [URL] {
-        var fileURLs = [URL]() //the retrieved file-based URLs will be placed here
-        let path = Bundle.main.url(forResource: fileOrFolderName, withExtension: withExt)
-        //get the URL of the item from the Bundle (in this case a folder
-        //whose name was passed as an argument to this function)
-        do {// Get the directory contents urls (including subfolders urls)
-            fileURLs = try FileManager.default.contentsOfDirectory(at: path!, includingPropertiesForKeys: nil, options: [])
-        } catch {
-            print(error.localizedDescription)
-        }
-        return fileURLs
-    }
-    
-    func getJSONDataIntoArray() -> ([String],String) {
-        var theGamePhrases = [String]() //empty array which will evenutally hold our phrases
-        //and which we will use to return as part of the result of this function.
-        var theGameGenre = ""
-        //get the URL of one of the JSON files from the JSONdatafiles folder, at random
-        let aDataFile = getFilesInBundleFolder(named: "JSONdatafiles",withExt: "").randomElement()
-        do {
-            let theData = try Data(contentsOf: aDataFile!) //get the contents of that file as data
-            do {
-                let jsonResult = try JSONSerialization.jsonObject(with: theData,options: JSONSerialization.ReadingOptions.mutableContainers) as AnyObject
-                let theTopicData = (jsonResult as? NSDictionary)
-                let gameGenre = theTopicData!["genre"] as! String
-                theGameGenre = gameGenre //copied so we can see the var outside of this block
-                let tempArray = theTopicData!["list"]
-                let gamePhrases = tempArray as! [String]
-                //compiler complains if we just try to assign this String array to a standard Swift one
-                //so instead, we extract individual strings and add them to our larger scope var
-                for aPhrase in gamePhrases { //done so we can see the var outside of this block
-                    theGamePhrases.append(aPhrase)
-                }
-            } catch {
-                print("couldn't decode JSON data")
-            }
-        } catch {
-            print("couldn't retrieve data from JSON file")
-        }
-        return (theGamePhrases,theGameGenre) //tuple composed of Array of guessingPhrase Strings and genre
-    }
 }

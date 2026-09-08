@@ -8,6 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 scripts/validate_resources.py
+  logic:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/test_logic.py
   build:
     runs-on: macos-latest
     steps:
