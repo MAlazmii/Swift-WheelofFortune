@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import Wheel_Of_Fortune
+@testable import Homework1
 
 class Wheel_Of_FortuneTests: XCTestCase {
 

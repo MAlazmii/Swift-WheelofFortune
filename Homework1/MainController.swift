@@ -61,7 +61,7 @@ class MainController: UIViewController, UICollectionViewDelegate, UICollectionVi
         let letter = Array(guessingPhrase)[indexPath.row]
 
         if (guessedAlreadyRight.contains(String(letter))) {
-            cell.theImage.image = UIImage(named: String(letter))
+            cell.theImage.image = UIImage(named: "letters/" + String(letter))
             cell.theLabel.text = ""
             // Set the label to be hidden
             cell.theLabel.isHidden = true

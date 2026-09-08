@@ -1,0 +1,22 @@
+name: Validate iOS projects
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  resources:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/validate_resources.py
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build for iOS Simulator
+        run: >-
+          xcodebuild build
+          -project "Homework1.xcodeproj"
+          -scheme "Homework1"
+          -sdk iphonesimulator
+          -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO
